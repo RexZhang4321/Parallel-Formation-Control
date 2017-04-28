@@ -1,13 +1,13 @@
 #include "bicycle_model.hpp"
 
-void bicycle_move(__IN control_input_t* input, __IN __OUT model_state_t* stat) {
-    double v = input->v;
-    double gamma = input->gamma;
+void bicycle::bicycle_move() {
+    double v = this->input.v;
+    double gamma = this->input.gamma;
     double dt = INTERVAL;
     double m_v = acc_limit(vel_limit(v), dt);
     double new_angle = steering_angle_limit(gamma);
     int i;
-    double x = stat->x, y = stat->y, theta = stat->theta;
+    double x = this->cur_state.x, y = this->cur_state.y, theta = this->cur_state.theta;
     double delta_theta = new_angle / N_INTEGRATE;
     double delta_time = INTERVAL / N_INTEGRATE;
     for (i = 0; i < N_INTEGRATE; i++) {
@@ -19,7 +19,12 @@ void bicycle_move(__IN control_input_t* input, __IN __OUT model_state_t* stat) {
         // integrate angle
         theta += dt * m_v * delta_theta;
     }
-    stat->x = x;
-    stat->y = y;
-    stat->theta = theta;
+    this->cur_state.x = x;
+    this->cur_state.y = y;
+    this->cur_state.theta = theta;
+}
+
+void bicycle::model_move() {
+    this->m_ctl.do_control(&this->cur_state, &this->cur_control_goal, &this->input);
+    this->bicycle_move();
 }

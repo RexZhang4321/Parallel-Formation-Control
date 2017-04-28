@@ -8,7 +8,16 @@
 
 #include "model.hpp"
 
+formation_point_t
+robot_model::gen_control_goal() {
+    // TODO
+    formation_point_t t;
+    return t;
+}
 
-void robot_model::model_move(__IN control_input_t* input, __IN __OUT model_state_t* stat) {
-    bicycle_move(input, stat);
+bool
+robot_model::control_goal_needs_update() {
+    double d_x = pow((this->cur_control_goal.x - this->cur_state.x), 2);
+    double d_y = pow((this->cur_control_goal.y - this->cur_state.y), 2);
+    return (d_x + d_y) <= pow(this->control_goal_update_r, 2);
 }

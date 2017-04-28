@@ -3,7 +3,15 @@
 
 #include "model_components.hpp"
 #include "defs.hpp"
+#include "model.hpp"
 
-void bicycle_move(__IN control_input_t* input, __IN __OUT model_state_t* stat);
+class bicycle : public robot_model {
+public:
+    void model_move();
+    
+private:
+    void bicycle_move();
+};
+
 
 #endif

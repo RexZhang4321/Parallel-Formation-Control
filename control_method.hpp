@@ -14,9 +14,9 @@
 
 class model_controller {
 public:
-    void do_control(__IN model_state_t* cur, __IN model_state_t* future, __OUT control_input_t* input);
+    void do_control(__IN model_state_t* cur, __IN formation_point_t* target, __OUT control_input_t* input);
     
-    void pi_controller(__IN model_state_t* cur, __IN model_state_t* future, __OUT control_input_t* input);
+    void pi_controller(__IN model_state_t* cur, __IN formation_point_t* target, __OUT control_input_t* input);
 };
 
 

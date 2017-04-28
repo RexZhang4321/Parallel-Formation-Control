@@ -17,21 +17,28 @@
 #define __IN 
 #define __OUT
 
-typedef struct {
+typedef struct model_state_t {
     double x;
     double y;
     double theta;
+    model_state_t();
 } model_state_t;
 
-typedef struct {
+typedef struct control_input_t {
     double v;
     double gamma;
+    control_input_t();
 } control_input_t;
 
-typedef struct {
+typedef struct formation_point_t {
     int x;
     int y;
     double cost;
+    formation_point_t();
+    formation_point_t(int, int, double);
+    bool operator==(const formation_point_t &fp) {
+        return this->x == fp.x && this->y == fp.y;
+    }
 } formation_point_t;
 
 #endif /* utils_hpp */
