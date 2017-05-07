@@ -39,7 +39,16 @@ formation_map::~formation_map() {}
 
 void
 formation_map::generate_formation_path() {
-    // TODO
+	// x = 499
+	int N = 10; // number of points on path
+	vector<formation_point_t> *formation_path;
+	////to
+	for (int i = 0; i <= N; i++) {
+		formation_path[i]->x = 499;
+		formation_path[i]->y = i * 100 + 64;
+	}
+	//??
+	return formation_path;
 }
 
 vector<formation_point_t>
@@ -49,8 +58,44 @@ formation_map::get_formation_path() {
 
 void
 formation_map::generate_formation_barrier() {
-    // TODO
     // need to consider cost near the barrier
+	/* #####
+	   #ooo#
+	   #####  */
+	int N = 150; // length of central barrier
+	vector<formation_point_t> barrier;
+	////to 3*N + 6
+	// Below is the central barrier points with cost = -1 (no pass). y = 499
+	for (int i = 0; i < N; i++) {
+		barrier[i]->x = 499 - N / 2 + i;
+		barrier[i]->y = 499;
+		barrier[i]->cost = -1;
+	}
+	
+	// The points near barrier have a cost of N_cost;
+	int N_cost = 1000;
+	vector<formation_point_t> outline_barrier[2 * N + 6];
+	for (int i = 0; i < N; i++) {
+		// up side without most left and right points
+		outline_barrier[N+i]->x = central_barrier[i]->x;
+		outline_barrier[N+i]->y = central_barrier[i]->y + 1;
+		outline_barrier[N+i]->cost = N_cost;
+		// down side without most left and right points
+		outline_barrier[2 * N + i]->x = central_barrier[i]->x;
+		outline_barrier[2 * N + i]->y = central_barrier[i]->y - 1;
+		outline_barrier[2 * N + i]->cost = N_cost;
+	}
+	for (i = 0; i < 3; i++) {
+		// left side
+		outline_barrier[3 * N + i]->x = centralbarrier[0]->x - 1;
+		outline_barrier[3 * N + i]->y = centralbarrier[0]->y + i - 1;
+		outline_barrier[3 * N + i]->cost = N_cost;
+		// right side
+		outline_barrier[3 * N + 3 + i]->x = central_barrier[N - 1]->x + 1;
+		outline_barrier[3 * N + 3 + i]->y = central_barrier[N - 1]->y + i - 1;
+		outline_barrier[3 * N + 3 + i]->cost = N_cost;
+	}
+	return 
 }
 
 vector<formation_point_t>

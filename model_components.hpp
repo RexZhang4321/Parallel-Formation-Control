@@ -9,8 +9,8 @@
 #define MIN_VELOCITY 0.0
 #define MAX_ACCELERATION 100.0
 #define MIN_ACCELERATION -100.0
-#define MAX_ANGLE 45.0
-#define MIN_ANGLE -45.0
+#define MAX_ANGLE PI/3
+#define MIN_ANGLE -PI/3
 
 double vel_limit(double v);
 
