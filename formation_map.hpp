@@ -31,10 +31,8 @@ public:
 
     vector<formation_point_t> create_formation_shape(int num_model, formation_point_t &central_point);
     
-    formation_point_t gen_sensor_map_goal(model_state_t robot_location, double r);
+    formation_point_t gen_sensor_map_goal(model_state_t robot_location, int robot_id, double sensor_map_r);
     
-    vector<formation_point_t> create_new_sensor_path(formation_point_t sensor_goal, model_state_t robot_location);
-
     // boudary
     // assume the map starts from (0, 0) to (boundary_x, boundary)
     int boundary_x;

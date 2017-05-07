@@ -13,16 +13,19 @@
 #include <vector>
 #include "defs.hpp"
 #include "control_method.hpp"
+#include "Dstar.h"
 #include <math.h>
 
 using namespace std;
 
 class robot_model {
 public:
+    robot_model();
+    
     virtual void model_move() = 0;
     
     // when the robot approaches the last control goal within certain distance r'
-    formation_point_t gen_control_goal();
+    void gen_control_goal();
     
     model_state_t cur_state;
     
@@ -30,7 +33,9 @@ public:
     
     formation_point_t cur_sensor_goal;
     
-    formation_point_t cur_control_goal;
+    int search_sensor_path_id;
+    
+//    formation_point_t cur_control_goal;
     
     bool control_goal_needs_update();
     
@@ -44,6 +49,10 @@ public:
     
     // used for triggering update
     double control_goal_update_r = 2;
+    
+    void create_new_sensor_path(vector<formation_point_t> barrier);
+    
+    vector<formation_point_t> observe_barrier(vector<formation_point_t> barrier);
     
     control_input_t input;
     

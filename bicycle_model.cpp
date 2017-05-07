@@ -25,6 +25,6 @@ void bicycle::bicycle_move() {
 }
 
 void bicycle::model_move() {
-    this->m_ctl.do_control(&this->cur_state, &this->cur_control_goal, &this->input);
+    this->m_ctl.do_control(&this->cur_state, &this->sensor_path[this->search_sensor_path_id], &this->input);
     this->bicycle_move();
 }

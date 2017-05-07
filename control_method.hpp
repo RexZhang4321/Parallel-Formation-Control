@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 #include "defs.hpp"
+#include <math.h>
+#include "model_components.hpp"
 
 class model_controller {
 public:
