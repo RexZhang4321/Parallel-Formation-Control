@@ -47,9 +47,15 @@ void
 formation_map::generate_formation_path() {
 	// x = 499
 	int N = 10; // number of points on path
-	for (int i = 0; i <= N; i++) {
+	for (int i = 0; i <= 2; i++) {
         formation_path.push_back(formation_point_t(499, i * 100 + 64, 0));
 	}
+    for (int i = 1; i <= 2; i++) {
+        formation_path.push_back(formation_point_t(499 + i * 100, 264, 0));
+    }
+//    for (int i = 0; i <= 2; i++) {
+//        formation_path.push_back(formation_point_t(499 + 2 * 100, i * 100 + 264, 0));
+//    }
 }
 
 vector<formation_point_t>
@@ -93,42 +99,5 @@ formation_map::get_formation_barrier() {
 vector<formation_point_t>
 formation_map::create_formation_shape(int num_model, formation_point_t &central_point) {
     vector<formation_point_t> t;
-    return t;
-}
-
-// under such circumstances will trigger this function:
-// 1. other robot is within the distance of 2r
-// 2. when the robot reaches within the sensor boundary of goal
-// 3. when the robot travels a certain distance
-// here we will only use line to find sensor map goal
-// return point will be passed to Dstar algorithm to generate a new path
-// need int position
-formation_point_t
-formation_map::gen_sensor_map_goal(model_state_t robot_location, int robot_id, double sensor_map_r) {
-    formation_point_t cur_formation_goal;
-    cur_formation_goal.x = formation_path[cur_formation_goal_id].x + formation_shape[robot_id].x;
-    cur_formation_goal.y = formation_path[cur_formation_goal_id].y + formation_shape[robot_id].y;
-    double d_x = cur_formation_goal.x - robot_location.x;
-    double d_y = cur_formation_goal.y - robot_location.y;
-    
-    // if distance of current formation_goal is smaller than r, update current formation goal
-    double d_x2 = pow(d_x, 2);
-    double d_y2 = pow(d_y, 2);
-    if ((d_x2 + d_y2) <= sensor_map_r * sensor_map_r) {
-        if (cur_formation_goal_id == formation_path.size() - 1) {
-            // we have reached the destination
-            ;
-        } else {
-            cur_formation_goal_id++;
-        }
-    }
-    
-    // generate the new sensor goal
-    double c = sqrt(d_x2 + d_y2);
-    formation_point_t t;
-    d_x = round(sensor_map_r / c * d_x + robot_location.x);
-    d_y = round(sensor_map_r / c * d_y + robot_location.y);
-    t.x = static_cast<int>(d_x);
-    t.y = static_cast<int>(d_y);
     return t;
 }

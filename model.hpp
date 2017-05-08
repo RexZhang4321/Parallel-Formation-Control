@@ -24,18 +24,19 @@ public:
     
     virtual void model_move() = 0;
     
-    // when the robot approaches the last control goal within certain distance r'
-    void gen_control_goal();
-    
     model_state_t cur_state;
     
-    formation_point_t cur_formation_goal;
+    vector<formation_point_t> formation_path;
+    
+    int formation_goal_id;
     
     formation_point_t cur_sensor_goal;
     
-    int search_sensor_path_id;
+    int search_sensor_path_id; // control goal
     
-//    formation_point_t cur_control_goal;
+    bool formation_goal_needs_update();
+    
+    bool sensor_goal_needs_update();
     
     bool control_goal_needs_update();
     
@@ -50,6 +51,13 @@ public:
     // used for triggering update
     double control_goal_update_r = 2;
     
+    void update_formation_goal();
+    
+    void update_sensor_goal(vector<formation_point_t> barrier);
+    
+    // when the robot approaches the last control goal within certain distance r'
+    void update_control_goal();
+    
     void create_new_sensor_path(vector<formation_point_t> barrier);
     
     vector<formation_point_t> observe_barrier(vector<formation_point_t> barrier);
@@ -57,6 +65,8 @@ public:
     control_input_t input;
     
     model_controller m_ctl;
+    
+    bool need_new_sensor_path;
 };
 
 
