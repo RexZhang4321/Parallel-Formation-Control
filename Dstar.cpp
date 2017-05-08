@@ -570,7 +570,7 @@ bool Dstar::replan() {
     }
 
     double cmin = INFINITY;
-    double tmin;
+    double tmin = INFINITY;
     state smin;
 
     for (i=n.begin(); i!=n.end(); i++) {

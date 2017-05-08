@@ -47,14 +47,14 @@ void
 formation_map::generate_formation_path() {
 	// x = 499
 	int N = 10; // number of points on path
-	for (int i = 0; i <= 2; i++) {
+	for (int i = 0; i <= N; i++) {
         formation_path.push_back(formation_point_t(499, i * 100 + 64, 0));
 	}
-    for (int i = 1; i <= 2; i++) {
-        formation_path.push_back(formation_point_t(499 + i * 100, 264, 0));
-    }
-//    for (int i = 0; i <= 2; i++) {
-//        formation_path.push_back(formation_point_t(499 + 2 * 100, i * 100 + 264, 0));
+//    for (int i = 1; i <= 2; i++) {
+//        formation_path.push_back(formation_point_t(499 + i * 100, 264, 0));
+//    }
+//    for (int i = 1; i <= 2; i++) {
+//        formation_path.push_back(formation_point_t(499 + 200, 264 + i * 100, 0));
 //    }
 }
 
@@ -77,18 +77,22 @@ formation_map::generate_formation_barrier() {
 
 	// The points near barrier have a cost of N_cost;
 	int N_cost = 1000;
+    for (int c = 1; c < 5; c++) {
 	for (int i = 0; i < N; i++) {
 		// up side without most left and right points
-        formation_barrier.push_back(formation_point_t(formation_barrier[i].x, formation_barrier[i].y + 1, N_cost));
+        formation_barrier.push_back(formation_point_t(formation_barrier[i].x, formation_barrier[i].y + c, N_cost));
 		// down side without most left and right points
-        formation_barrier.push_back(formation_point_t(formation_barrier[i].x, formation_barrier[i].y - 1, N_cost));
+        formation_barrier.push_back(formation_point_t(formation_barrier[i].x, formation_barrier[i].y - c, N_cost));
 	}
+    }
+    for (int c = 1; c < 3; c++) {
 	for (int i = 0; i < 3; i++) {
 		// left side
-        formation_barrier.push_back(formation_point_t(formation_barrier[0].x - 1, formation_barrier[0].y + i - 1, N_cost));
+        formation_barrier.push_back(formation_point_t(formation_barrier[0].x - c, formation_barrier[0].y + i - 1, N_cost));
 		// right side
-        formation_barrier.push_back(formation_point_t(formation_barrier[N - 1].x + 1, formation_barrier[N - 1].y + i -1, N_cost));
+        formation_barrier.push_back(formation_point_t(formation_barrier[N - 1].x + c, formation_barrier[N - 1].y + i -1, N_cost));
 	}
+    }
 }
 
 vector<formation_point_t>

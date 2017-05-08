@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
         // set initial control goal
         robots[i].update_control_goal();
     }
-    
+
     // output barrier information
     const char barrier_filename[100] = "/Users/RexZhang/Desktop/parallel/barrier";
     FILE *fp = fopen(barrier_filename, "w");
@@ -59,10 +59,10 @@ int main(int argc, char **argv) {
     }
     fclose(fp);
 
-    int simulation_time = 520; // seconds
+    int simulation_time = 620; // seconds
     int sim_steps = simulation_time / INTERVAL;
     for (int i = 0; i < sim_steps; i++) {
-        for (int rid = 0; rid < 1; rid++) {
+        for (int rid = 0; rid < robots.size(); rid++) {
             /* when the robot reaches within certain distance to the sensor goal */
             robots[rid].update_formation_goal();
             robots[rid].update_sensor_goal(fmp->get_formation_barrier());
@@ -73,8 +73,7 @@ int main(int argc, char **argv) {
             if (i % 10 == 0 && rid == 0) {
                 printf("%d, Robot %d: x: %lf, y: %lf, theta: %lf\n", i, rid,
                        robots[rid].cur_state.x, robots[rid].cur_state.y, robots[rid].cur_state.theta);
-                printf("formation map goal: %d, %d\n", fmp->formation_path[fmp->cur_formation_goal_id].x + fmp->formation_shape[rid].x,
-                       fmp->formation_path[fmp->cur_formation_goal_id].y + fmp->formation_shape[rid].y);
+                printf("formation map goal: %d, %d\n", robots[rid].formation_path[robots[rid].formation_goal_id].x, robots[rid].formation_path[robots[rid].formation_goal_id].y);
                 printf("control goal: %d, %d\n", robots[rid].sensor_path[robots[rid].search_sensor_path_id].x, robots[rid].sensor_path[robots[rid].search_sensor_path_id].y);
             }
             if (i % 10 ==0) {
