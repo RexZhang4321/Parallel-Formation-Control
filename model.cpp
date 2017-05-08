@@ -102,6 +102,14 @@ robot_model::update_sensor_goal(vector<formation_point_t> barrier) {
             d_y = round(sensor_map_r / c * d_y + cur_state.y);
             cur_sensor_goal.x = static_cast<int>(round(d_x));
             cur_sensor_goal.y = static_cast<int>(round(d_y));
+            for (auto& barrier_point: barrier) {
+                if (cur_sensor_goal.x == barrier_point.x &&
+                    cur_sensor_goal.y == barrier_point.y) {
+                    cur_sensor_goal.x = cur_formation_goal.x;
+                    cur_sensor_goal.y = cur_formation_goal.y;
+                    break;
+                }
+            }
             create_new_sensor_path(barrier);
         }
     }
