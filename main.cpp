@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
     }
     fclose(fp);
 
-    int simulation_time = 150; // seconds
+    int simulation_time = 10; // seconds
     int sim_steps = simulation_time / INTERVAL;
     for (int i = 0; i < sim_steps; i++) {
         for (int rid = 0; rid < robots.size(); rid++) {

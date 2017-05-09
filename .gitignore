@@ -3,3 +3,4 @@
 Debug
 *.sln
 *.vcx*
+.vscode
