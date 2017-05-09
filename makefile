@@ -8,7 +8,7 @@ EXECUTABLE=main
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
@@ -16,4 +16,3 @@ $(EXECUTABLE): $(OBJECTS)
 clean:
 	rm $(EXECUTABLE)
 	rm *.o
-

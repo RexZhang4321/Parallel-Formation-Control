@@ -14,7 +14,9 @@
 #include <unordered_map>
 #include <functional>
 
+#ifdef __APPLE
 #define M_SQRT2 1.41421356237309504880
+#endif
 
 using namespace std;
 
