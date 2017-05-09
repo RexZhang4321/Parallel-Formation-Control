@@ -44,6 +44,8 @@ robot_model::update_control_goal() {
 bool
 robot_model::formation_goal_needs_update() {
     bool check_distance = distance_is_smaller(formation_path[formation_goal_id], cur_state, sensor_map_r);
+    // for serial
+    /*
     if (check_distance) {
         if (common_formation_path_id_list[current_common_formation_path_idx] < formation_goal_id) {
             return false;
@@ -74,6 +76,8 @@ robot_model::formation_goal_needs_update() {
         }
     }
     return false;
+    */
+    return check_distance;
 }
 
 bool

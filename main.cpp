@@ -1,26 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <queue>
+#include <vector>
+#include <array>
 #include "bicycle_model.hpp"
 #include "formation_map.hpp"
 #include "control_method.hpp"
 #include "defs.hpp"
-#ifdef __USE_MPI__
 #include "mpi.h"
-#endif
+
+using namespace std;
+
+void pack_robot_info(int robot_id, model_state_t cur_state, int current_common_formation_path_id, double* dest);
 
 int main(int argc, char **argv) {
-    #ifdef __USE_MPI__
     // MPI init stuffs
     int my_id;
     int num_procs;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
-    #endif
 
     // initialize
-    int n_model = 16;
+    int n_model = argc > 1 ? atoi(argv[1]) : 16;
     current_common_formation_path_idx = 1;
     num_robot_enter_formation_goal.resize(n_model);
     can_update = false;
@@ -31,10 +34,7 @@ int main(int argc, char **argv) {
     vector<bicycle> robots(n_model);
     vector<FILE*> fps(n_model);
     vector<bool> common_formation_path(fmp->formation_path.size(), true);
-    char robot_filename[100];
     for (int i = 0; i < robots.size(); i++) {
-        sprintf(robot_filename, "/Users/RexZhang/Desktop/parallel/robot%d", i);
-        fps[i] = fopen(robot_filename, "w");
         robots[i].robot_id = i;
         int formation_path_idx = 0;
         // robot formation goal offset
@@ -70,56 +70,104 @@ int main(int argc, char **argv) {
         // set initial control goal
         robots[i].update_control_goal();
     }
-    
+
     vector<int> common_formation_path_id_list;
     for (int i = 0; i < common_formation_path.size(); i++) {
         if (common_formation_path[i]) {
             common_formation_path_id_list.push_back(i);
-            printf("%d\t", i);
         }
     }
-    printf("\n");
     for (auto &robot: robots) {
         robot.common_formation_path_id_list = common_formation_path_id_list;
         robot.n_total_robots = n_model;
     }
 
-    // output barrier information
-    const char barrier_filename[100] = "/Users/RexZhang/Desktop/parallel/barrier";
-    FILE *fp = fopen(barrier_filename, "w");
-    for (auto barrier_point: fmp->get_formation_barrier()) {
-        fprintf(fp, "%d\t%d\t%lf\n", barrier_point.x, barrier_point.y, barrier_point.cost);
-    }
-    fclose(fp);
 
-    int simulation_time = 150; // seconds
-    int sim_steps = simulation_time / INTERVAL;
-    for (int i = 0; i < sim_steps; i++) {
-        for (int rid = 0; rid < robots.size(); rid++) {
-            /* when the robot reaches within certain distance to the sensor goal */
-            robots[rid].update_formation_goal();
-            robots[rid].update_sensor_goal(fmp->get_formation_barrier());
-            /* when the robot approaches the last control goal within certain distance control_goal_update_r */
-            robots[rid].update_control_goal();
-            robots[rid].model_move();
-            // print every 0.1 seconds OR 10 steps
-            if (i % 100 == 0 && rid == 3) {
-                printf("%d, Robot %d: x: %lf, y: %lf, theta: %lf\n", i, rid,
-                       robots[rid].cur_state.x, robots[rid].cur_state.y, robots[rid].cur_state.theta);
-                printf("formation map goal: %d, %d\n", robots[rid].formation_path[robots[rid].formation_goal_id].x, robots[rid].formation_path[robots[rid].formation_goal_id].y);
-                printf("control goal: %d, %d\n", robots[rid].sensor_path[robots[rid].search_sensor_path_id].x, robots[rid].sensor_path[robots[rid].search_sensor_path_id].y);
-                printf("common formation goal: %d\n", common_formation_path_id_list[current_common_formation_path_idx]);
+    MPI_Barrier(MPI_COMM_WORLD);
+    // master init
+    // worker working
+    if (my_id == 0) {
+        queue<int> worker_queue;
+        queue<int> finished_worker_queue;
+        vector<MPI_Request> reqs;
+        reqs.resize(num_procs);
+        vector<array<double, 4>> recv_data;
+        recv_data.resize(num_procs);
+        double data_send[5];
+        int current_common_formation_path_idx = 0;
+        for (int i = 1; i < num_procs; i++) {
+            worker_queue.push(i);
+        }
+        while (current_common_formation_path_idx != common_formation_path_id_list.size() - 1) {
+            // dispatch workers
+            current_common_formation_path_idx++;
+            for (int i = 0; i < n_model; i++) {
+                int worker_id = worker_queue.front();
+                worker_queue.pop();
+                // prepare the data to be sent
+                pack_robot_info(i, robots[i].cur_state, common_formation_path_id_list[current_common_formation_path_idx], data_send);
+                MPI_Send(data_send, 5, MPI_DOUBLE, worker_id, 0, MPI_COMM_WORLD);
+                // async receieve data from worker
+                MPI_Irecv(&recv_data[worker_id], 4, MPI_DOUBLE, worker_id, 0, MPI_COMM_WORLD, &reqs[worker_id]);
+                finished_worker_queue.push(worker_id);
             }
-            if (i % 10 ==0) {
-                fprintf(fps[rid], "%lf\t%lf\n", robots[rid].cur_state.x, robots[rid].cur_state.y);
+            // collect workers' results
+            for (int i = 0; i < n_model; i++) {
+                int worker_id = finished_worker_queue.front();
+                finished_worker_queue.pop();
+                MPI_Wait(&reqs[worker_id], MPI_STATUS_IGNORE);
+                int rid = static_cast<int>(round(reqs[worker_id][0]));
+                robots[rid].cur_state.x = reqs[worker_id][1];
+                robots[rid].cur_state.y = reqs[worker_id][2];
+                robots[rid].cur_state.theta = reqs[worker_id][3];
+                worker_queue.push(worker_id);
             }
         }
+        data_send[0] = -1;
+        for (int i = 1; i < num_procs; i++) {
+            MPI_Send(data_send, 5, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+        }
+    } else {
+        while (true) {
+            double recv_data[5];
+            MPI_Recv(recv_data, 5, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            int rid = static_cast<int>(round(reqs[worker_id][0]));
+            // the end of the program
+            if (rid == -1) {
+                break;
+            }
+            // set start status from master
+            robots[rid].cur_state.x = reqs[worker_id][1];
+            robots[rid].cur_state.y = reqs[worker_id][2];
+            robots[rid].cur_state.theta = reqs[worker_id][3];
+            robots[rid].cur_formation_goal_id = static_cast<int>(round(reqs[worker_id][4]));
+            // initialize necessary start information
+            robots[rid].cur_sensor_goal.x = robots[rid].cur_state.x;
+            robots[rid].cur_sensor_goal.y = robots[rid].cur_state.y;
+            robots[rid].update_sensor_goal(fmp->get_formation_barrier());
+            robots[rid].update_control_goal();
+            while (!robots[rid].formation_goal_needs_update()) {
+                robots[rid].update_sensor_goal(fmp->get_formation_barrier());
+                robots[rid].update_control_goal();
+                robots[rid].move();
+            }
+            double data_send[4];
+            data_send[0] = rid;
+            data_send[1] = robots[rid].cur_state.x;
+            data_send[2] = robots[rid].cur_state.y;
+            data_send[3] = robots[rid].cur_state.theta;
+            MPI_Send(data_send, 4, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+        }
     }
-    for (auto fp: fps) {
-        fclose(fp);
-    }
-    #ifdef __USE_MPI__
+
     MPI_Finalize();
-    #endif
     return 0;
+}
+
+void pack_robot_info(int robot_id, model_state_t cur_state, int current_common_formation_path_id, double* dest) {
+    dest[0] = robot_id;
+    dest[1] = cur_state.x;
+    dest[2] = cur_state.y;
+    dest[3] = cur_state.theta;
+    dest[4] = current_common_formation_path_id;
 }
