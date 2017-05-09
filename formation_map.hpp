@@ -30,6 +30,7 @@ public:
     vector<formation_point_t> get_formation_barrier();
 
     void create_formation_shape(int num_model);
+    void create_formation_shape_sqr(int num_model);
 
     // boudary
     // assume the map starts from (0, 0) to (boundary_x, boundary)

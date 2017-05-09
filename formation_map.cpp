@@ -47,7 +47,7 @@ formation_map::~formation_map() {}
 void
 formation_map::generate_formation_path() {
 	// x = 499
-	int N = 10; // number of points on path
+	int N = 40; // number of points on path
 	for (int i = 0; i <= N; i++) {
         formation_path.push_back(formation_point_t(499, i * 100 + 64, 0));
 	}
@@ -71,28 +71,33 @@ formation_map::generate_formation_barrier() {
 	   #ooo#
 	   #####  */
 	int N = 150; // length of central barrier
+    int n_layer = 7;
 	// Below is the central barrier points with cost = -1 (no pass). y = 499
+    for (int nl = 1; nl <= n_layer; nl++) {
 	for (int i = 0; i < N; i++) {
-        formation_barrier.push_back(formation_point_t(499 - N / 2 + i, 499, -1));
+        formation_barrier.push_back(formation_point_t(499 - N / 2 + i, 499 * nl + nl - 1, -1));
 	}
+    }
 
 	// The points near barrier have a cost of N_cost;
 	int N_cost = 1000;
     for (int c = 1; c < 5; c++) {
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < N * n_layer; i++) {
 		// up side without most left and right points
         formation_barrier.push_back(formation_point_t(formation_barrier[i].x, formation_barrier[i].y + c, N_cost));
 		// down side without most left and right points
         formation_barrier.push_back(formation_point_t(formation_barrier[i].x, formation_barrier[i].y - c, N_cost));
 	}
     }
+    for (int nl = 0; nl < n_layer; nl++) {
     for (int c = 1; c < 3; c++) {
 	for (int i = 0; i < 3; i++) {
 		// left side
-        formation_barrier.push_back(formation_point_t(formation_barrier[0].x - c, formation_barrier[0].y + i - 1, N_cost));
+        formation_barrier.push_back(formation_point_t(formation_barrier[N * nl].x - c, formation_barrier[N * nl].y + i - 1, N_cost));
 		// right side
-        formation_barrier.push_back(formation_point_t(formation_barrier[N - 1].x + c, formation_barrier[N - 1].y + i -1, N_cost));
+        formation_barrier.push_back(formation_point_t(formation_barrier[N * (nl + 1) - 1].x + c, formation_barrier[N * (nl + 1) - 1].y + i -1, N_cost));
 	}
+    }
     }
 }
 
@@ -112,5 +117,16 @@ formation_map::create_formation_shape(int num_model) {
         formation_shape.push_back(formation_point_t(round(R * cos(angle)),
                                                     round(R * sin(angle)),
                                                     0));
+    }
+}
+
+void
+formation_map::create_formation_shape_sqr(int num_model) {
+    int width = ceil(sqrt(num_model));
+    int scale = 100 / width;
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < width; j++) {
+            formation_shape.push_back(formation_point_t(scale*(-width / 2 + j), scale * (width / 2 - i), 0));
+        }
     }
 }

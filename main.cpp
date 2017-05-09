@@ -167,6 +167,7 @@ int main(int argc, char **argv) {
                 if (i % 10 == 0) {
                     fprintf(fp, "%lf\t%lf\n", robots[rid].cur_state.x, robots[rid].cur_state.y);
                 }
+                i++;
             }
             double data_send[4];
             data_send[0] = rid;
