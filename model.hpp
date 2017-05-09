@@ -15,6 +15,9 @@
 #include "control_method.hpp"
 #include "Dstar.h"
 #include <math.h>
+#include <functional>
+#include <numeric>
+#include <algorithm>
 
 using namespace std;
 
@@ -25,7 +28,7 @@ public:
     int robot_id;
     int n_total_robots;
     
-    bool is_waiting;
+    int is_waiting;
     
     double last_vel;
     

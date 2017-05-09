@@ -20,9 +20,9 @@ int main(int argc, char **argv) {
     #endif
 
     // initialize
-    int n_model = 32;
+    int n_model = 16;
     current_common_formation_path_idx = 1;
-    num_robot_enter_formation_goal = 0;
+    num_robot_enter_formation_goal.resize(n_model);
     can_update = false;
     formation_map* fmp = new formation_map(n_model);
 
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
     }
     fclose(fp);
 
-    int simulation_time = 250; // seconds
+    int simulation_time = 150; // seconds
     int sim_steps = simulation_time / INTERVAL;
     for (int i = 0; i < sim_steps; i++) {
         for (int rid = 0; rid < robots.size(); rid++) {

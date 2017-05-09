@@ -10,6 +10,9 @@
 #define defs_hpp
 
 #include <stdio.h>
+#include <vector>
+
+using namespace std;
 
 #define N_INTEGRATE 1000
 #define INTERVAL 0.01
@@ -19,7 +22,7 @@
 #define PI 3.14159265
 
 extern int current_common_formation_path_idx;
-extern int num_robot_enter_formation_goal;
+extern vector<bool> num_robot_enter_formation_goal;
 extern bool can_update;
 
 typedef struct model_state_t {

@@ -45,29 +45,32 @@ bool
 robot_model::formation_goal_needs_update() {
     bool check_distance = distance_is_smaller(formation_path[formation_goal_id], cur_state, sensor_map_r);
     if (check_distance) {
-        if (formation_goal_id < common_formation_path_id_list[current_common_formation_path_idx]) {
-            return true;
-        } else if (formation_goal_id == common_formation_path_id_list[current_common_formation_path_idx]) {
-            if (can_update) {
-                num_robot_enter_formation_goal--;
-                is_waiting = false;
-                if (num_robot_enter_formation_goal == 0) {
-                    can_update = false;
-                    current_common_formation_path_idx++;
-                }
-                return true;
-            } else {
-                if (!is_waiting) {
-                    num_robot_enter_formation_goal++;
-                    is_waiting = true;
-                }
-                if (num_robot_enter_formation_goal == n_total_robots) {
-                    can_update = true;
-                }
-                return false;
-            }
-        } else {
+        if (common_formation_path_id_list[current_common_formation_path_idx] < formation_goal_id) {
             return false;
+        } else if (common_formation_path_id_list[current_common_formation_path_idx] > formation_goal_id) {
+            return true;
+        }
+        if (!can_update) {
+            num_robot_enter_formation_goal[robot_id] = true;
+            bool all_get_in = true;
+            for (bool flg: num_robot_enter_formation_goal) {
+                all_get_in = all_get_in & flg;
+            }
+            if (all_get_in) {
+                can_update = true;
+            }
+            return false;
+        } else {
+            num_robot_enter_formation_goal[robot_id] = false;
+            bool not_all_get_out = false;
+            for (bool flg: num_robot_enter_formation_goal) {
+                not_all_get_out = not_all_get_out | flg;
+            }
+            if (!not_all_get_out) {
+                current_common_formation_path_idx++;
+                can_update = false;
+            }
+            return true;
         }
     }
     return false;
