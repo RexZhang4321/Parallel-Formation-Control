@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     #endif
 
     // initialize
-    int n_model = 16;
+    int n_model = 2;
     current_common_formation_path_idx = 1;
     num_robot_enter_formation_goal.resize(n_model);
     can_update = false;
@@ -92,9 +92,8 @@ int main(int argc, char **argv) {
     }
     fclose(fp);
 
-    int simulation_time = 10; // seconds
-    int sim_steps = simulation_time / INTERVAL;
-    for (int i = 0; i < sim_steps; i++) {
+    int i = 0;
+    while (current_common_formation_path_idx != common_formation_path_id_list.size() - 1) {
         for (int rid = 0; rid < robots.size(); rid++) {
             /* when the robot reaches within certain distance to the sensor goal */
             robots[rid].update_formation_goal();
@@ -103,7 +102,7 @@ int main(int argc, char **argv) {
             robots[rid].update_control_goal();
             robots[rid].model_move();
             // print every 0.1 seconds OR 10 steps
-            if (i % 100 == 0 && rid == 3) {
+            if (i % 100 == 0 && rid == 0) {
                 printf("%d, Robot %d: x: %lf, y: %lf, theta: %lf\n", i, rid,
                        robots[rid].cur_state.x, robots[rid].cur_state.y, robots[rid].cur_state.theta);
                 printf("formation map goal: %d, %d\n", robots[rid].formation_path[robots[rid].formation_goal_id].x, robots[rid].formation_path[robots[rid].formation_goal_id].y);
@@ -114,6 +113,7 @@ int main(int argc, char **argv) {
                 fprintf(fps[rid], "%lf\t%lf\n", robots[rid].cur_state.x, robots[rid].cur_state.y);
             }
         }
+        i++;
     }
     for (auto fp: fps) {
         fclose(fp);
