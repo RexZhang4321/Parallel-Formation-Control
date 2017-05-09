@@ -8,6 +8,10 @@
 
 #include "defs.hpp"
 
+int current_common_formation_path_idx;
+int num_robot_enter_formation_goal;
+bool can_update;
+
 model_state_t::model_state_t() : x(0), y(0), theta(0) {}
 
 control_input_t::control_input_t() : v(0), gamma(0) {}

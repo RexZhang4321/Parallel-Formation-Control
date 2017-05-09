@@ -4,7 +4,8 @@ void bicycle::bicycle_move() {
     double v = this->input.v;
     double gamma = this->input.gamma;
     double dt = INTERVAL;
-    double m_v = acc_limit(vel_limit(v), dt);
+    double m_v = acc_limit(vel_limit(v), this->last_vel, dt);
+    this->last_vel = m_v;
     double new_angle = steering_angle_limit(gamma);
     int i;
     double x = this->cur_state.x, y = this->cur_state.y, theta = this->cur_state.theta;

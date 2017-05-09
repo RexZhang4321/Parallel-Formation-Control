@@ -1,14 +1,12 @@
 #include "model_components.hpp"
 
-static double last_velocity = 0.0;
-
 double vel_limit(double v) {
     if (v > MAX_VELOCITY) return MAX_VELOCITY;
     if (v < MIN_VELOCITY) return MIN_VELOCITY;
     return v;
 }
 
-double acc_limit(double v, double dt) {
+double acc_limit(double v, double last_velocity, double dt) {
     double acc = (v - last_velocity) / dt;
     if (acc > MAX_ACCELERATION) 
         return MAX_ACCELERATION * dt + last_velocity;

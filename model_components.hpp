@@ -2,11 +2,10 @@
 #define _MODEL_COMPONENTS_H
 
 #include <math.h>
-
-#define PI 3.14159265
+#include "defs.hpp"
 
 #define MAX_VELOCITY 20.0
-#define MIN_VELOCITY 0.0
+#define MIN_VELOCITY -20.0
 #define MAX_ACCELERATION 100.0
 #define MIN_ACCELERATION -100.0
 #define MAX_ANGLE PI/3
@@ -14,7 +13,7 @@
 
 double vel_limit(double v);
 
-double acc_limit(double v, double dt);
+double acc_limit(double v, double last_vel, double dt);
 
 double steering_angle_limit(double angle);
 

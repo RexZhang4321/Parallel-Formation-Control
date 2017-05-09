@@ -22,11 +22,19 @@ class robot_model {
 public:
     robot_model();
     
+    int robot_id;
+    int n_total_robots;
+    
+    bool is_waiting;
+    
+    double last_vel;
+    
     virtual void model_move() = 0;
     
     model_state_t cur_state;
     
     vector<formation_point_t> formation_path;
+    vector<int> common_formation_path_id_list;
     
     int formation_goal_id;
     

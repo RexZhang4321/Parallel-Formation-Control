@@ -8,12 +8,13 @@
 
 #include "formation_map.hpp"
 
-formation_map::formation_map() : boundary_x(999), boundary_y(999), n_robot(4)  {
+formation_map::formation_map(int n_model) : boundary_x(999), boundary_y(999), n_robot(n_model)  {
     // default formation shape
-    formation_shape.push_back(formation_point_t(50, 50, 1));
-    formation_shape.push_back(formation_point_t(50, -50, 1));
-    formation_shape.push_back(formation_point_t(-50, -50, 1));
-    formation_shape.push_back(formation_point_t(-50, 50, 1));
+    create_formation_shape(n_model);
+//    formation_shape.push_back(formation_point_t(50, 50, 1));
+//    formation_shape.push_back(formation_point_t(50, -50, 1));
+//    formation_shape.push_back(formation_point_t(-50, -50, 1));
+//    formation_shape.push_back(formation_point_t(-50, 50, 1));
     
     // default formation path
     generate_formation_path();
@@ -100,8 +101,16 @@ formation_map::get_formation_barrier() {
     return this->formation_barrier;
 }
 
-vector<formation_point_t>
-formation_map::create_formation_shape(int num_model, formation_point_t &central_point) {
-    vector<formation_point_t> t;
-    return t;
+void
+formation_map::create_formation_shape(int num_model) {
+    int R = 50;
+    double avg_angle_div_2 = PI / num_model;
+    double angle;
+    int if_odd = !(num_model % 2);
+    for (int i = 0; i < num_model; i++) {
+        angle = PI / 2 + (2 * i + if_odd) * avg_angle_div_2;
+        formation_shape.push_back(formation_point_t(round(R * cos(angle)),
+                                                    round(R * sin(angle)),
+                                                    0));
+    }
 }

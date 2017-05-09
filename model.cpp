@@ -20,6 +20,8 @@ robot_model::robot_model() {
     this->search_sensor_path_id = 0;
     this->formation_goal_id = 0;
     this->need_new_sensor_path = true;
+    this->last_vel = 0;
+    this->is_waiting = false;
 }
 
 void
@@ -41,7 +43,34 @@ robot_model::update_control_goal() {
 
 bool
 robot_model::formation_goal_needs_update() {
-    return distance_is_smaller(formation_path[formation_goal_id], cur_state, sensor_map_r);
+    bool check_distance = distance_is_smaller(formation_path[formation_goal_id], cur_state, sensor_map_r);
+    if (check_distance) {
+        if (formation_goal_id < common_formation_path_id_list[current_common_formation_path_idx]) {
+            return true;
+        } else if (formation_goal_id == common_formation_path_id_list[current_common_formation_path_idx]) {
+            if (can_update) {
+                num_robot_enter_formation_goal--;
+                is_waiting = false;
+                if (num_robot_enter_formation_goal == 0) {
+                    can_update = false;
+                    current_common_formation_path_idx++;
+                }
+                return true;
+            } else {
+                if (!is_waiting) {
+                    num_robot_enter_formation_goal++;
+                    is_waiting = true;
+                }
+                if (num_robot_enter_formation_goal == n_total_robots) {
+                    can_update = true;
+                }
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    return false;
 }
 
 bool

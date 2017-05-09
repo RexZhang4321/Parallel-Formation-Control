@@ -16,6 +16,11 @@
 #define MAP_RATIO 100
 #define __IN 
 #define __OUT
+#define PI 3.14159265
+
+extern int current_common_formation_path_idx;
+extern int num_robot_enter_formation_goal;
+extern bool can_update;
 
 typedef struct model_state_t {
     double x;

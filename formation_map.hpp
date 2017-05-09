@@ -19,7 +19,7 @@ using namespace std;
 
 class formation_map {
 public:
-    formation_map();
+    formation_map(int n_robot);
     formation_map(int bx, int by, int n_robot);
     ~formation_map();
 
@@ -29,7 +29,7 @@ public:
     void generate_formation_barrier();
     vector<formation_point_t> get_formation_barrier();
 
-    vector<formation_point_t> create_formation_shape(int num_model, formation_point_t &central_point);
+    void create_formation_shape(int num_model);
 
     // boudary
     // assume the map starts from (0, 0) to (boundary_x, boundary)

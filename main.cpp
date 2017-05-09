@@ -20,18 +20,38 @@ int main(int argc, char **argv) {
     #endif
 
     // initialize
-    formation_map* fmp = new formation_map();
+    int n_model = 32;
+    current_common_formation_path_idx = 1;
+    num_robot_enter_formation_goal = 0;
+    can_update = false;
+    formation_map* fmp = new formation_map(n_model);
 
     fmp->cur_formation_goal_id = 1;
 
-    vector<bicycle> robots(4);
-    FILE* fps[4];
+    vector<bicycle> robots(n_model);
+    vector<FILE*> fps(n_model);
+    vector<bool> common_formation_path(fmp->formation_path.size(), true);
     char robot_filename[100];
     for (int i = 0; i < robots.size(); i++) {
         sprintf(robot_filename, "/Users/RexZhang/Desktop/parallel/robot%d", i);
         fps[i] = fopen(robot_filename, "w");
+        robots[i].robot_id = i;
+        int formation_path_idx = 0;
         // robot formation goal offset
+        bool skip_flg = false;
         for (auto &formation_path_point: fmp->formation_path) {
+            skip_flg = false;
+            for (auto &barrier_point: fmp->formation_barrier) {
+                if (formation_path_point.x + fmp->formation_shape[i].x == barrier_point.x &&
+                    formation_path_point.y + fmp->formation_shape[i].y == barrier_point.y) {
+                    skip_flg = true;
+                    common_formation_path[formation_path_idx] =
+                        common_formation_path[formation_path_idx] & false;
+                    break;
+                }
+            }
+            formation_path_idx++;
+            if (skip_flg) continue;
             robots[i].formation_path.push_back(
                     formation_point_t(formation_path_point.x + fmp->formation_shape[i].x,
                                       formation_path_point.y + fmp->formation_shape[i].y,
@@ -50,6 +70,19 @@ int main(int argc, char **argv) {
         // set initial control goal
         robots[i].update_control_goal();
     }
+    
+    vector<int> common_formation_path_id_list;
+    for (int i = 0; i < common_formation_path.size(); i++) {
+        if (common_formation_path[i]) {
+            common_formation_path_id_list.push_back(i);
+            printf("%d\t", i);
+        }
+    }
+    printf("\n");
+    for (auto &robot: robots) {
+        robot.common_formation_path_id_list = common_formation_path_id_list;
+        robot.n_total_robots = n_model;
+    }
 
     // output barrier information
     const char barrier_filename[100] = "/Users/RexZhang/Desktop/parallel/barrier";
@@ -59,7 +92,7 @@ int main(int argc, char **argv) {
     }
     fclose(fp);
 
-    int simulation_time = 620; // seconds
+    int simulation_time = 250; // seconds
     int sim_steps = simulation_time / INTERVAL;
     for (int i = 0; i < sim_steps; i++) {
         for (int rid = 0; rid < robots.size(); rid++) {
@@ -70,11 +103,12 @@ int main(int argc, char **argv) {
             robots[rid].update_control_goal();
             robots[rid].model_move();
             // print every 0.1 seconds OR 10 steps
-            if (i % 10 == 0 && rid == 0) {
+            if (i % 100 == 0 && rid == 3) {
                 printf("%d, Robot %d: x: %lf, y: %lf, theta: %lf\n", i, rid,
                        robots[rid].cur_state.x, robots[rid].cur_state.y, robots[rid].cur_state.theta);
                 printf("formation map goal: %d, %d\n", robots[rid].formation_path[robots[rid].formation_goal_id].x, robots[rid].formation_path[robots[rid].formation_goal_id].y);
                 printf("control goal: %d, %d\n", robots[rid].sensor_path[robots[rid].search_sensor_path_id].x, robots[rid].sensor_path[robots[rid].search_sensor_path_id].y);
+                printf("common formation goal: %d\n", common_formation_path_id_list[current_common_formation_path_idx]);
             }
             if (i % 10 ==0) {
                 fprintf(fps[rid], "%lf\t%lf\n", robots[rid].cur_state.x, robots[rid].cur_state.y);
