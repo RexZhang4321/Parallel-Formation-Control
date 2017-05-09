@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     vector<bool> common_formation_path(fmp->formation_path.size(), true);
     char robot_filename[100];
     for (int i = 0; i < robots.size(); i++) {
-        sprintf(robot_filename, "/Users/RexZhang/Desktop/parallel/robot%d", i);
+        sprintf(robot_filename, "./pic/robot%d", i);
         fps[i] = fopen(robot_filename, "w");
         robots[i].robot_id = i;
         int formation_path_idx = 0;
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
     }
 
     // output barrier information
-    const char barrier_filename[100] = "/Users/RexZhang/Desktop/parallel/barrier";
+    const char barrier_filename[100] = "./pic/barrier";
     FILE *fp = fopen(barrier_filename, "w");
     for (auto barrier_point: fmp->get_formation_barrier()) {
         fprintf(fp, "%d\t%d\t%lf\n", barrier_point.x, barrier_point.y, barrier_point.cost);
