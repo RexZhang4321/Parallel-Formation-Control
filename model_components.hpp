@@ -1,3 +1,14 @@
+//
+//  model_components.hpp
+//  parallelProj
+//
+//  Created by Jingxuan Zhang on 4/26/17.
+//  Copyright © 2017 Jingxuan Zhang. All rights reserved.
+//
+//  This file defines some basic components that we need to build the model,
+//  including the limitation of the velocity, accerlation and steering angle.
+//
+
 #ifndef _MODEL_COMPONENTS_H
 #define _MODEL_COMPONENTS_H
 

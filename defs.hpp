@@ -5,6 +5,9 @@
 //  Created by Jingxuan Zhang on 4/26/17.
 //  Copyright © 2017 Jingxuan Zhang. All rights reserved.
 //
+//  This file defines some basic definitions including constants, some structures
+//  and global variables that we may use in other files.
+//
 
 #ifndef defs_hpp
 #define defs_hpp

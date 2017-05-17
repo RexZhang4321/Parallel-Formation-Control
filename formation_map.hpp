@@ -5,6 +5,11 @@
 //  Created by Jingxuan Zhang on 4/26/17.
 //  Copyright © 2017 Jingxuan Zhang. All rights reserved.
 //
+//  This file, along with the cpp file, defines the class of the formation map,
+//  which is the global map information we used to represent the simlutation map.
+//  This class defines the basic information of the barrier of this simlutated
+//  map and the formation of all robots that need to keep.
+//
 
 #ifndef formation_map_hpp
 #define formation_map_hpp

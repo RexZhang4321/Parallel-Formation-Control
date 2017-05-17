@@ -1,3 +1,20 @@
+//
+//  main.cpp
+//  parallelProj
+//
+//  Created by Jingxuan Zhang on 4/26/17.
+//  Copyright © 2017 Jingxuan Zhang. All rights reserved.
+//
+//  This is the main entry point of this project, where MPI is implemented.
+//  We adopted a master-slave architecture to conduct parallel, where the master
+//  is responsible for dispatching the tasks and slaves(or workers, in a more
+//  political correctness sense), take the tasks whenever they are available.
+//  Each task for a worker is to simulate one robot from one formation goal to the
+//  next. In this sense we can dynamically allocate tasks and do the load balance.
+//  This can also fix the problem where the number of process is less than the number 
+//  or robots to be simulated.
+//
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -47,7 +47,7 @@ formation_map::~formation_map() {}
 void
 formation_map::generate_formation_path() {
 	// x = 499
-	int N = 40; // number of points on path
+	int N = 10; // number of points on path
 	for (int i = 0; i <= N; i++) {
         formation_path.push_back(formation_point_t(499, i * 100 + 64, 0));
 	}
@@ -71,7 +71,7 @@ formation_map::generate_formation_barrier() {
 	   #ooo#
 	   #####  */
 	int N = 150; // length of central barrier
-    int n_layer = 7;
+    int n_layer = 1;
 	// Below is the central barrier points with cost = -1 (no pass). y = 499
     for (int nl = 1; nl <= n_layer; nl++) {
 	for (int i = 0; i < N; i++) {

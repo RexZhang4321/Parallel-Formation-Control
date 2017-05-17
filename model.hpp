@@ -5,6 +5,11 @@
 //  Created by Jingxuan Zhang on 4/26/17.
 //  Copyright © 2017 Jingxuan Zhang. All rights reserved.
 //
+//  This is the abstruct class for the model, and it includes the basic behaviors
+//  a robot need to run the simulations, like updating the control goal, sensor goal
+//  and formation goal, planing the path using Dstar algorithm and some other necessary
+//  factors.
+//
 
 #ifndef model_hpp
 #define model_hpp
